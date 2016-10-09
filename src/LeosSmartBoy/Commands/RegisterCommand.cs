@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Net.Http;
 using LeosSmartBoy.Managers;
 using LeosSmartBoy.Services;
 using Telegram.Bot.Types;
@@ -9,9 +8,15 @@ namespace LeosSmartBoy.Commands
     public class RegisterCommand : CommandImpl
     {
         private readonly IStorageManager storageManager;
-        public RegisterCommand(IStorageManager storageManager) : base("/register")
+        private RegisterCommand(IStorageManager storageManager) : base("/register")
         {
             this.storageManager = storageManager;
+        }
+
+        public static void BuildCommand(IStorageManager storageManager)
+        {
+            // ReSharper disable once ObjectCreationAsStatement
+            new RegisterCommand(storageManager);
         }
 
         public override void Process(BotContext context)

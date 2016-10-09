@@ -25,7 +25,6 @@ namespace LeosSmartBoy.Services
         public async Task Run()
         {
             BotClient.OnMessage += BotMessageReceived;
-            BotClient.OnUpdate += BotUpdatesReceived;
             BotClient.OnCallbackQuery += BotCallbackQueryReceived;
             BotClient.OnInlineQuery += BotInlineQueryReceived;
 
@@ -35,6 +34,7 @@ namespace LeosSmartBoy.Services
             var task = new Task(() =>
             {
                 while (true) {}
+                // ReSharper disable once FunctionNeverReturns
             });
             await task;
         }
@@ -68,11 +68,6 @@ namespace LeosSmartBoy.Services
             }
         }
 
-        private void BotUpdatesReceived(object obj, UpdateEventArgs args)
-        {
-            Console.WriteLine(args);
-        }
-
         private void BotCallbackQueryReceived(object obj, CallbackQueryEventArgs args)
         {
             Console.WriteLine(args);
@@ -83,10 +78,11 @@ namespace LeosSmartBoy.Services
             Console.WriteLine(args);
         }
 
+
         private void ReigsterCommands()
         {
-            new BillCommand(storageManager);
-            new RegisterCommand(storageManager);
+            BillCommand.BuildCommand(storageManager);
+            RegisterCommand.BuildCommand(storageManager);
         }
     }
 }
