@@ -9,7 +9,7 @@ namespace LeosSmartBoy.Commands
 {
     public class BillCommand : CommandImpl
     {
-        private IStorageManager storageManager;
+        private readonly IStorageManager storageManager;
 
         public BillCommand(IStorageManager storageManager) : base("/bill")
         {
@@ -20,7 +20,7 @@ namespace LeosSmartBoy.Commands
         {
             var message = context.Message;
             var chat = message.Chat;
-            if (chat.Type != ChatType.Group || chat.Type != ChatType.Supergroup) return;
+            if (chat.Type != ChatType.Group && chat.Type != ChatType.Supergroup) return;
 
             var client = context.BotClient;
             var userList = storageManager.GetChatUsers(chat);

@@ -86,6 +86,7 @@ namespace LeosSmartBoy.Services
         private void ReigsterCommands()
         {
             new BillCommand(storageManager);
+            new RegisterCommand(storageManager);
         }
     }
 }
