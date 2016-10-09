@@ -7,6 +7,6 @@ namespace LeosSmartBoy.Managers
     {
         void SaveUser(User user);
         void AddUsersToChat(Chat chat, List<User> users);
-        public List<User> GetChatUsers(Chat chat);
+        List<User> GetChatUsers(Chat chat);
     }
 }
