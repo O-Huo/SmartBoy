@@ -1,7 +1,10 @@
-﻿namespace LeosSmartBoy.Commands
+﻿using LeosSmartBoy.Services;
+using Telegram.Bot.Types;
+
+namespace LeosSmartBoy.Commands
 {
     public interface ICommandInterface
     {
-        void Process(string data);
+        void Process(BotContext context);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using LeosSmartBoy.Services;
+using Telegram.Bot.Types;
 
 namespace LeosSmartBoy.Commands
 {
@@ -8,6 +9,6 @@ namespace LeosSmartBoy.Commands
         {
             BotService.RegisterService(command, Process);
         }
-        public abstract void Process(string data);
+        public abstract void Process(BotContext context);
     }
 }

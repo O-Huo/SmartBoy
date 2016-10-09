@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using LeosSmartBoy.Commands;
+using LeosSmartBoy.Managers;
 using Telegram.Bot;
 using Telegram.Bot.Args;
 
@@ -8,25 +10,28 @@ namespace LeosSmartBoy.Services
 {
     public class BotService
     {
-        public delegate void MessageEventHandler(string text);
-        private ITelegramBotClient botClient;
+        public delegate void MessageEventHandler(BotContext context);
+
         private static readonly IDictionary<string, MessageEventHandler> Handlers = new Dictionary<string, MessageEventHandler>();
+        private readonly IStorageManager storageManager = new MemoryStorageManager();
+
+        public ITelegramBotClient BotClient { get; }
 
         public BotService(string clientSecrete)
         {
-            botClient = new TelegramBotClient(clientSecrete);
+            BotClient = new TelegramBotClient(clientSecrete);
         }
 
         public async Task Run()
         {
-            var result = botClient.GetMeAsync().Result;
+            BotClient.OnMessage += BotMessageReceived;
+            BotClient.OnUpdate += BotUpdatesReceived;
+            BotClient.OnCallbackQuery += BotCallbackQueryReceived;
+            BotClient.OnInlineQuery += BotInlineQueryReceived;
 
-            botClient.OnMessage += BotMessageReceived;
-            botClient.OnUpdate += BotUpdatesReceived;
-            botClient.OnCallbackQuery += BotCallbackQueryReceived;
-            botClient.OnInlineQuery += BotInlineQueryReceived;
+            ReigsterCommands();
 
-            botClient.StartReceiving();
+            BotClient.StartReceiving();
             var task = new Task(() =>
             {
                 while (true) {}
@@ -48,15 +53,18 @@ namespace LeosSmartBoy.Services
 
         private void BotMessageReceived(object obj, MessageEventArgs args)
         {
-            var message = args.Message.Text;
-            var result = message.Split(new[] {' '}, 2);
-            var key = result.Length > 0 ? result[0] : null;
-            var data = result.Length > 1 ? result[1] : null;
+            var message = args.Message?.Text;
+            var result = message?.Split();
+            var key = result?.Length > 0 ? result[0] : null;
             if (key == null) return;
 
             if (Handlers.ContainsKey(key))
             {
-                Handlers[key](data);
+                Handlers[key](new BotContext
+                {
+                    BotClient = BotClient,
+                    Message = args.Message
+                });
             }
         }
 
@@ -73,6 +81,11 @@ namespace LeosSmartBoy.Services
         private void BotInlineQueryReceived(object obj, InlineQueryEventArgs args)
         {
             Console.WriteLine(args);
+        }
+
+        private void ReigsterCommands()
+        {
+            new BillCommand(storageManager);
         }
     }
 }
