@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using LeosSmartBoy.Services;
+using Microsoft.Extensions.Configuration;
+using System.IO;
 
 namespace LeosSmartBoy
 {
@@ -9,6 +8,14 @@ namespace LeosSmartBoy
     {
         public static void Main(string[] args)
         {
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddUserSecrets();
+            var configuration = builder.Build();
+
+            BotService service = new BotService(configuration["ApiKey"]);
+            service.Run().Wait();
         }
+
     }
 }
