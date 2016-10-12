@@ -31,7 +31,7 @@ namespace LeosSmartBoy.Managers
 
         public List<User> GetChatUsers(Chat chat)
         {
-            if (!chatUserListDictionary.ContainsKey(chat.Id)) return null;
+            if (!chatUserListDictionary.ContainsKey(chat.Id)) return new List<User>();
             var userIdSet = chatUserListDictionary[chat.Id];
             return users.Where(user => userIdSet.Contains(user.Id)).ToList();
         }

@@ -14,7 +14,7 @@ namespace LeosSmartBoy.Models
         public int Id;
         public long ChatId;
         public int CreatedBy;
-        public List<int> SharedWith;
+        public ISet<int> SharedWith;
         public float Amount;
         public Status CurrentStatus;
     }

@@ -6,6 +6,7 @@ using LeosSmartBoy.Helpers;
 using LeosSmartBoy.Managers;
 using LeosSmartBoy.Models;
 using LeosSmartBoy.Services;
+using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
@@ -34,7 +35,7 @@ namespace LeosSmartBoy.Commands
             if (chat.Type != ChatType.Group && chat.Type != ChatType.Supergroup) return;
 
             var result = message.Text?.Split(new[] {' '}, 2);
-            var amountNumber = -1f;
+            var amountNumber = .0f;
             if (result?.Length == 2)
             {
                 var amount = result[1];
@@ -54,26 +55,45 @@ namespace LeosSmartBoy.Commands
                 ChatId = chat.Id,
                 CreatedBy = message.From.Id,
                 CurrentStatus = Bill.Status.SetAmountIntegeral,
-                SharedWith = new List<int>()
+                SharedWith = new HashSet<int> { message.From.Id },
+                Amount = amountNumber
             };
 
             if (amountNumber > 0)
             {
-                bill.Amount = amountNumber;
                 bill.CurrentStatus = Bill.Status.SetSharedWith;
             }
 
             var client = context.BotClient;
-            //var userList = storageManager.GetChatUsers(chat);
+            var users = storageManager.GetChatUsers(chat);
 
-            client.SendTextMessageAsync(chat.Id, "Set Amount", false, false, 0,
-                KeyboardMarkupHelpers.CreateDigitInlineKeyboardMarkup("123123"));
-            //client.SendTextMessageAsync(chat.Id, "Select User", false, false, 0,
-            //    new InlineKeyboardMarkup(userList.Select(user => new InlineKeyboardButton
-            //    {
-            //        Text = user.FirstName + " " + user.LastName, CallbackData = user.Id.ToString()
-            //    }).ToArray()));
+            if (bill.CurrentStatus == Bill.Status.SetAmountIntegeral)
+            {
+                client.SendTextMessageAsync(chat.Id, "Amount: " + bill.Amount, false, false, 0,
+                    KeyboardMarkupHelpers.CreateDigitInlineKeyboardMarkup());
+            }
+            else
+            {
+                client.SendTextMessageAsync(chat.Id, "Amount: " + bill.Amount + "\nSelected Users:", false, false, 0,
+                    KeyboardMarkupHelpers.CreateUserSelectionKeyboardMarkup(users, bill.SharedWith));
+            }
         }
 
+        private void GenerateResponse(Bill bill, ITelegramBotClient botClient)
+        {
+            switch (bill.CurrentStatus)
+            {
+                case Bill.Status.SetAmountIntegeral:
+                    break;
+                case Bill.Status.SetAmountFractional:
+                    break;
+                case Bill.Status.SetSharedWith:
+                    break;
+                case Bill.Status.Sealed:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
     }
 }
