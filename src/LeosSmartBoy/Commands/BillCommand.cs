@@ -32,7 +32,8 @@ namespace LeosSmartBoy.Commands
         {
             var message = context.Message;
             var chat = message.Chat;
-            if (chat.Type != ChatType.Group && chat.Type != ChatType.Supergroup) return;
+//if (chat.Type != ChatType.Group && chat.Type != ChatType.Supergroup) return;
+            Console.WriteLine(message);
 
             var result = message.Text?.Split(new[] {' '}, 2);
             var amountNumber = .0f;

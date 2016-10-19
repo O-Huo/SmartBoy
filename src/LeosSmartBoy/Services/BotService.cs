@@ -5,6 +5,8 @@ using LeosSmartBoy.Commands;
 using LeosSmartBoy.Managers;
 using Telegram.Bot;
 using Telegram.Bot.Args;
+using Telegram.Bot.Types.ReplyMarkups;
+using Telegram.Bot.Types;
 
 namespace LeosSmartBoy.Services
 {
@@ -58,6 +60,25 @@ namespace LeosSmartBoy.Services
             var key = result?.Length > 0 ? result[0] : null;
             if (key == null) return;
 
+            Console.WriteLine(message);
+
+            var kb = new ReplyKeyboardMarkup();
+            kb.Keyboard=
+                new KeyboardButton[][]
+                {
+                    new KeyboardButton[]
+                    {
+                        new KeyboardButton("花了一些钱"+"\u261d"),
+                        new KeyboardButton("还了一些钱"+"\u2615")
+                    },
+                    new KeyboardButton[]
+                    {
+                        new KeyboardButton("本月日志"+"\u3299")
+                    } 
+                };
+
+            BotClient.SendTextMessageAsync(args.Message.Chat.Id, "hhh", false, false, 0, kb);
+
             if (Handlers.ContainsKey(key))
             {
                 Handlers[key](new BotContext
@@ -65,7 +86,9 @@ namespace LeosSmartBoy.Services
                     BotClient = BotClient,
                     Message = args.Message
                 });
+                Console.WriteLine("handlers contain key");
             }
+            
         }
 
         private void BotCallbackQueryReceived(object obj, CallbackQueryEventArgs args)
