@@ -7,10 +7,10 @@ namespace LeosSmartBoy.Managers
     public interface IStorageManager
     {
         void SaveUser(User user);
-        void AddUsersToChat(Chat chat, List<User> userList);
-        List<User> GetChatUsers(Chat chat);
+        void AddUsersToChat(long chatId, List<User> userList);
+        List<User> GetChatUsers(long chatId);
 
         void SaveBill(Bill bill);
-        Bill GetBill(int id);
+        Bill GetBillWIthMessageId(int id);
     }
 }

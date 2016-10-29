@@ -1,21 +1,40 @@
-﻿using System;
+﻿using System.Runtime.Serialization;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace LeosSmartBoy.Callbacks
 {
+    public enum Button
+    {
+        [EnumMember(Value = "Back")]
+        Back,
+        [EnumMember(Value = "Ok")]
+        Ok,
+        [EnumMember(Value = "Dot")]
+        Dot,
+
+    }
     public class InlineKeyboardCallback
     {
         public string Command;
-        public string Data;
+        public object Data;
 
-        static InlineKeyboardCallback CreateWithDataObject(string command, Object obj)
+        [JsonConstructor]
+        public InlineKeyboardCallback(string command, string data)
         {
-            var jsonString = JsonConvert.SerializeObject(obj);
-            return new InlineKeyboardCallback
-            {
-                Command = command,
-                Data = jsonString
-            };
+            Command = command;
+            Data = data;
+        }
+
+        public InlineKeyboardCallback(string command, Button data)
+        {
+            Command = command;
+            Data = data.ToString();
+        }
+
+        public override string ToString()
+        {
+            return JsonConvert.SerializeObject(this);
         }
     }
 }

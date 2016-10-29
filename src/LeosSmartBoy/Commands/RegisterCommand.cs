@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using LeosSmartBoy.Managers;
 using LeosSmartBoy.Services;
+using Telegram.Bot.Args;
 using Telegram.Bot.Types;
 
 namespace LeosSmartBoy.Commands
@@ -19,12 +20,12 @@ namespace LeosSmartBoy.Commands
             new RegisterCommand(storageManager);
         }
 
-        public override void Process(BotContext context)
+        public override void Process(BotContext context, MessageEventArgs args)
         {
-            var message = context.Message;
+            var message = args.Message;
             var chat = message.Chat;
             var user = message.From;
-            storageManager.AddUsersToChat(chat, new List<User> { user });
+            storageManager.AddUsersToChat(chat.Id, new List<User> { user });
 
             context.BotClient.SendTextMessageAsync(chat.Id, "Register Succeeded", false, false, message.MessageId);
         }

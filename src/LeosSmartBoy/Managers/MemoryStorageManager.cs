@@ -16,23 +16,23 @@ namespace LeosSmartBoy.Managers
             users.Add(user);
         }
 
-        public void AddUsersToChat(Chat chat, List<User> userList)
+        public void AddUsersToChat(long chatId, List<User> userList)
         {
-            if (!chatUserListDictionary.ContainsKey(chat.Id))
+            if (!chatUserListDictionary.ContainsKey(chatId))
             {
-                chatUserListDictionary.Add(chat.Id, new HashSet<int>());
+                chatUserListDictionary.Add(chatId, new HashSet<int>());
             }
             foreach (var user in userList)
             {
                 SaveUser(user);
-                chatUserListDictionary[chat.Id].Add(user.Id);
+                chatUserListDictionary[chatId].Add(user.Id);
             }
         }
 
-        public List<User> GetChatUsers(Chat chat)
+        public List<User> GetChatUsers(long chatId)
         {
-            if (!chatUserListDictionary.ContainsKey(chat.Id)) return new List<User>();
-            var userIdSet = chatUserListDictionary[chat.Id];
+            if (!chatUserListDictionary.ContainsKey(chatId)) return new List<User>();
+            var userIdSet = chatUserListDictionary[chatId];
             return users.Where(user => userIdSet.Contains(user.Id)).ToList();
         }
 
@@ -41,9 +41,9 @@ namespace LeosSmartBoy.Managers
             bills.Add(bill);
         }
 
-        public Bill GetBill(int id)
+        public Bill GetBillWIthMessageId(int messageId)
         {
-            return bills.First(bill => bill.Id == id);
+            return bills.FirstOrDefault(bill => bill.MessageId == messageId);
         }
     }
 }
