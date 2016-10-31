@@ -33,13 +33,13 @@ namespace LeosSmartBoy.Services
 
         public async Task Run()
         {
-            //BotClient.OnMessage += BotMessageReceived;
-            //BotClient.OnCallbackQuery += BotCallbackQueryReceived;
-            //BotClient.OnInlineQuery += BotInlineQueryReceived;
+            BotClient.OnMessage += BotMessageReceived;
+            BotClient.OnCallbackQuery += BotCallbackQueryReceived;
+            BotClient.OnInlineQuery += BotInlineQueryReceived;
 
-            //ReigsterCommands();
+            ReigsterCommands();
 
-            //BotClient.StartReceiving();
+            BotClient.StartReceiving();
             var task = new Task(() =>
             {
                 while (true) {}
@@ -105,6 +105,7 @@ namespace LeosSmartBoy.Services
                 MessageEventHandlers[key](new BotContext
                 {
                     BotClient = BotClient,
+                    GithubBot = GithubBot
                 }, args);
             }
         }
@@ -118,6 +119,7 @@ namespace LeosSmartBoy.Services
                 CallbackQueryEventHandlers[callback?.Command](new BotContext
                 {
                     BotClient = BotClient,
+                    GithubBot = GithubBot
                 }, args);
             }
         }
@@ -132,6 +134,7 @@ namespace LeosSmartBoy.Services
         {
             BillCommand.BuildCommand(storageManager);
             RegisterCommand.BuildCommand(storageManager);
+            GithubBot.AddStorageManager(storageManager);
         }
     }
 }

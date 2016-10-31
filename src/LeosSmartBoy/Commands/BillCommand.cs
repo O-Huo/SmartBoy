@@ -88,7 +88,7 @@ namespace LeosSmartBoy.Commands
             if (Enum.IsDefined(typeof(Button), input))
             {
                 Enum.TryParse(input, false, out button);
-                UpdateBill(bill, button);
+                UpdateBill(bill, button, context);
             }
             else
             {
@@ -133,8 +133,9 @@ namespace LeosSmartBoy.Commands
             }
         }
 
-        private void UpdateBill(Bill bill, Button button)
+        private void UpdateBill(Bill bill, Button button, BotContext context)
         {
+            var githubBot = context.GithubBot;
             switch (button)
             {
                 case Button.Dot:
@@ -165,6 +166,7 @@ namespace LeosSmartBoy.Commands
                             break;
                         case Bill.Status.SetSharedWith:
                             bill.CurrentStatus = Bill.Status.Sealed;
+                            githubBot.WriteBill(bill);
                             break;
                         case Bill.Status.Sealed:
                             break;
@@ -211,7 +213,7 @@ namespace LeosSmartBoy.Commands
                     return await responseDelegate("Amount: " + bill.Amount+ "\nSelected Users:",
                         KeyboardMarkupHelpers.CreateUserSelectionKeyboardMarkup(command, users, bill.SharedWith));
                 case Bill.Status.Sealed:
-                    return await responseDelegate("Amount: " + bill.AmountString + "\nSelected Users: " + string.Join(", ", users.Where(u => bill.SharedWith.Contains(u.Id)).Select(u => u.LastName + ' ' + u.FirstName)), null);
+                    return await responseDelegate("Amount: " + bill.AmountString + "\nSelected Users: " + string.Join(", ", users.Where(u => bill.SharedWith.Contains(u.Id)).Select(u => u.LastName + ' ' + u.FirstName)) + "\nTestIssue: \n https://github.com/RoommateX/test/issues/16", null);
                 default:
                     throw new ArgumentOutOfRangeException();
             }
