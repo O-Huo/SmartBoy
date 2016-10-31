@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace LeosSmartBoy.Models
 {
@@ -12,10 +14,12 @@ namespace LeosSmartBoy.Models
             Sealed
         }
         public int Id;
+        public int MessageId;
         public long ChatId;
         public int CreatedBy;
         public ISet<int> SharedWith;
-        public float Amount;
+        public StringBuilder AmountString = new StringBuilder();
+        public double Amount => Convert.ToDouble(AmountString.ToString());
         public Status CurrentStatus;
     }
 }

@@ -1,5 +1,5 @@
 ﻿using LeosSmartBoy.Services;
-using Telegram.Bot.Types;
+using Telegram.Bot.Args;
 
 namespace LeosSmartBoy.Commands
 {
@@ -7,8 +7,11 @@ namespace LeosSmartBoy.Commands
     {
         protected CommandImpl(string command)
         {
-            BotService.RegisterService(command, Process);
+            BotService.RegisterMessageEventService(command, Process);
+            BotService.RegisterCallbackQueryEventService(command, Callback);
         }
-        public abstract void Process(BotContext context);
+        public abstract void Process(BotContext context, MessageEventArgs args);
+
+        public virtual void Callback(BotContext context, CallbackQueryEventArgs args) { }
     }
 }

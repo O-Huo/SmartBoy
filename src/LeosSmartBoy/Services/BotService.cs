@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using LeosSmartBoy.Callbacks;
 using LeosSmartBoy.Commands;
 using LeosSmartBoy.Managers;
+using Newtonsoft.Json;
 using Telegram.Bot;
 using Telegram.Bot.Args;
 using Telegram.Bot.Types.ReplyMarkups;
@@ -12,9 +14,11 @@ namespace LeosSmartBoy.Services
 {
     public class BotService
     {
-        public delegate void MessageEventHandler(BotContext context);
+        public delegate void MessageEventHandler(BotContext context, MessageEventArgs args);
+        public delegate void CallbackQueryEventHandler(BotContext context, CallbackQueryEventArgs args);
 
-        private static readonly IDictionary<string, MessageEventHandler> Handlers = new Dictionary<string, MessageEventHandler>();
+        private static readonly IDictionary<string, MessageEventHandler> MessageEventHandlers = new Dictionary<string, MessageEventHandler>();
+        private static readonly IDictionary<string, CallbackQueryEventHandler> CallbackQueryEventHandlers = new Dictionary<string, CallbackQueryEventHandler>();
         private readonly IStorageManager storageManager = new MemoryStorageManager();
 
         public ITelegramBotClient BotClient { get; }
@@ -44,15 +48,27 @@ namespace LeosSmartBoy.Services
             await task;
         }
 
-        public static void RegisterService(string command, MessageEventHandler handler)
+        public static void RegisterMessageEventService(string command, MessageEventHandler handler)
         {
-            if (Handlers.ContainsKey(command))
+            if (MessageEventHandlers.ContainsKey(command))
             {
-                Handlers[command] += handler;
+                MessageEventHandlers[command] += handler;
             }
             else
             {
-                Handlers.Add(command, handler);
+                MessageEventHandlers.Add(command, handler);
+            }
+        }
+
+        public static void RegisterCallbackQueryEventService(string command, CallbackQueryEventHandler handler)
+        {
+            if (CallbackQueryEventHandlers.ContainsKey(command))
+            {
+                CallbackQueryEventHandlers[command] += handler;
+            }
+            else
+            {
+                CallbackQueryEventHandlers.Add(command, handler);
             }
         }
 
@@ -63,40 +79,47 @@ namespace LeosSmartBoy.Services
             var key = result?.Length > 0 ? result[0] : null;
             if (key == null) return;
 
-            Console.WriteLine(message);
 
-            var kb = new ReplyKeyboardMarkup();
-            kb.Keyboard=
-                new KeyboardButton[][]
-                {
-                    new KeyboardButton[]
-                    {
-                        new KeyboardButton("花了一些钱"+"\u261d"),
-                        new KeyboardButton("还了一些钱"+"\u2615")
-                    },
-                    new KeyboardButton[]
-                    {
-                        new KeyboardButton("本月日志"+"\u3299")
-                    } 
-                };
+            // Console.WriteLine(message);
 
-            BotClient.SendTextMessageAsync(args.Message.Chat.Id, "hhh", false, false, 0, kb);
+            // var kb = new ReplyKeyboardMarkup();
+            // kb.Keyboard=
+            //     new KeyboardButton[][]
+            //     {
+            //         new KeyboardButton[]
+            //         {
+            //             new KeyboardButton("花了一些钱"+"\u261d"),
+            //             new KeyboardButton("还了一些钱"+"\u2615")
+            //         },
+            //         new KeyboardButton[]
+            //         {
+            //             new KeyboardButton("本月日志"+"\u3299")
+            //         } 
+            //     };
 
-            if (Handlers.ContainsKey(key))
+            // BotClient.SendTextMessageAsync(args.Message.Chat.Id, "hhh", false, false, 0, kb);
+
+
+            if (MessageEventHandlers.ContainsKey(key))
             {
-                Handlers[key](new BotContext
+                MessageEventHandlers[key](new BotContext
                 {
                     BotClient = BotClient,
-                    Message = args.Message
-                });
-                Console.WriteLine("handlers contain key");
+                }, args);
             }
-            
         }
 
         private void BotCallbackQueryReceived(object obj, CallbackQueryEventArgs args)
         {
             Console.WriteLine(args);
+            var callback = JsonConvert.DeserializeObject<InlineKeyboardCallback>(args.CallbackQuery.Data);
+            if (MessageEventHandlers.ContainsKey(callback?.Command))
+            {
+                CallbackQueryEventHandlers[callback?.Command](new BotContext
+                {
+                    BotClient = BotClient,
+                }, args);
+            }
         }
 
         private void BotInlineQueryReceived(object obj, InlineQueryEventArgs args)
