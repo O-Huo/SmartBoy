@@ -13,9 +13,8 @@ namespace LeosSmartBoy
                 .AddUserSecrets();
             var configuration = builder.Build();
 
-            BotService service = new BotService(configuration["ApiKey"]);
+            BotService service = new BotService(configuration["ApiKey"], configuration["GithubID"], configuration["GithubSecret"]);
             service.Run().Wait();
         }
-
     }
 }

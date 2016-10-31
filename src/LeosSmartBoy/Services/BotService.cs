@@ -19,20 +19,23 @@ namespace LeosSmartBoy.Services
 
         public ITelegramBotClient BotClient { get; }
 
-        public BotService(string clientSecrete)
+        public GithubBotService GithubBot;
+
+        public BotService(string clientSecret, string githubID, string githubSecret)
         {
-            BotClient = new TelegramBotClient(clientSecrete);
+            BotClient = new TelegramBotClient(clientSecret);
+            GithubBot = new GithubBotService(githubID, githubSecret);
         }
 
         public async Task Run()
         {
-            BotClient.OnMessage += BotMessageReceived;
-            BotClient.OnCallbackQuery += BotCallbackQueryReceived;
-            BotClient.OnInlineQuery += BotInlineQueryReceived;
+            //BotClient.OnMessage += BotMessageReceived;
+            //BotClient.OnCallbackQuery += BotCallbackQueryReceived;
+            //BotClient.OnInlineQuery += BotInlineQueryReceived;
 
-            ReigsterCommands();
+            //ReigsterCommands();
 
-            BotClient.StartReceiving();
+            //BotClient.StartReceiving();
             var task = new Task(() =>
             {
                 while (true) {}
