@@ -10,7 +10,7 @@ namespace LeosSmartBoy
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddUserSecrets();
+                .AddUserSecrets<Program>();
             var configuration = builder.Build();
 
             BotService service = new BotService(configuration["ApiKey"]);
