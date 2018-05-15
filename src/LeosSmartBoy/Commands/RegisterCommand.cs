@@ -3,6 +3,7 @@ using LeosSmartBoy.Managers;
 using LeosSmartBoy.Services;
 using Telegram.Bot.Args;
 using Telegram.Bot.Types;
+using System;
 
 namespace LeosSmartBoy.Commands
 {
@@ -25,6 +26,7 @@ namespace LeosSmartBoy.Commands
             var message = args.Message;
             var chat = message.Chat;
             var user = message.From;
+
             storageManager.AddUsersToChat(chat.Id, new List<User> { user });
 
             context.BotClient.SendTextMessageAsync(chat.Id, "Register Succeeded", false, false, message.MessageId);

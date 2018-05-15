@@ -7,6 +7,8 @@ using LeosSmartBoy.Managers;
 using Newtonsoft.Json;
 using Telegram.Bot;
 using Telegram.Bot.Args;
+using Telegram.Bot.Types.ReplyMarkups;
+using Telegram.Bot.Types;
 
 namespace LeosSmartBoy.Services
 {
@@ -21,9 +23,12 @@ namespace LeosSmartBoy.Services
 
         public ITelegramBotClient BotClient { get; }
 
-        public BotService(string clientSecrete)
+        public GithubBotService GithubBot;
+
+        public BotService(string clientSecret, string githubID, string githubSecret)
         {
-            BotClient = new TelegramBotClient(clientSecrete);
+            BotClient = new TelegramBotClient(clientSecret);
+            GithubBot = new GithubBotService(githubID, githubSecret);
         }
 
         public async Task Run()
@@ -74,11 +79,33 @@ namespace LeosSmartBoy.Services
             var key = result?.Length > 0 ? result[0] : null;
             if (key == null) return;
 
+
+            // Console.WriteLine(message);
+
+            // var kb = new ReplyKeyboardMarkup();
+            // kb.Keyboard=
+            //     new KeyboardButton[][]
+            //     {
+            //         new KeyboardButton[]
+            //         {
+            //             new KeyboardButton("花了一些钱"+"\u261d"),
+            //             new KeyboardButton("还了一些钱"+"\u2615")
+            //         },
+            //         new KeyboardButton[]
+            //         {
+            //             new KeyboardButton("本月日志"+"\u3299")
+            //         } 
+            //     };
+
+            // BotClient.SendTextMessageAsync(args.Message.Chat.Id, "hhh", false, false, 0, kb);
+
+
             if (MessageEventHandlers.ContainsKey(key))
             {
                 MessageEventHandlers[key](new BotContext
                 {
                     BotClient = BotClient,
+                    GithubBot = GithubBot
                 }, args);
             }
         }
@@ -92,6 +119,7 @@ namespace LeosSmartBoy.Services
                 CallbackQueryEventHandlers[callback?.Command](new BotContext
                 {
                     BotClient = BotClient,
+                    GithubBot = GithubBot
                 }, args);
             }
         }
@@ -106,6 +134,7 @@ namespace LeosSmartBoy.Services
         {
             BillCommand.BuildCommand(storageManager);
             RegisterCommand.BuildCommand(storageManager);
+            GithubBot.AddStorageManager(storageManager);
         }
     }
 }
