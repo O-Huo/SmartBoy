@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using LeosSmartBoy.Callbacks;
-using LeosSmartBoy.Commands;
-using LeosSmartBoy.Managers;
+using SmartBoy.Callbacks;
+using SmartBoy.Commands;
+using SmartBoy.Managers;
 using Newtonsoft.Json;
 using Telegram.Bot;
 using Telegram.Bot.Args;
 
-namespace LeosSmartBoy.Services
+namespace SmartBoy.Services
 {
     public class BotService
     {

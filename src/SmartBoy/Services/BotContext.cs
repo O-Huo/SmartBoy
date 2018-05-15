@@ -1,6 +1,6 @@
 ﻿using Telegram.Bot;
 
-namespace LeosSmartBoy.Services
+namespace SmartBoy.Services
 {
     public class BotContext
     {

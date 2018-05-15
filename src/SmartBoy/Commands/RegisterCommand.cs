@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
-using LeosSmartBoy.Managers;
-using LeosSmartBoy.Services;
+using SmartBoy.Managers;
+using SmartBoy.Services;
 using Telegram.Bot.Args;
 using Telegram.Bot.Types;
 
-namespace LeosSmartBoy.Commands
+namespace SmartBoy.Commands
 {
     public class RegisterCommand : CommandImpl
     {

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using LeosSmartBoy.Models;
+using SmartBoy.Models;
 using Telegram.Bot.Types;
 
-namespace LeosSmartBoy.Managers
+namespace SmartBoy.Managers
 {
     public interface IStorageManager
     {

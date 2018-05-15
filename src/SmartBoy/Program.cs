@@ -1,8 +1,8 @@
-﻿using LeosSmartBoy.Services;
+﻿using SmartBoy.Services;
 using Microsoft.Extensions.Configuration;
 using System.IO;
 
-namespace LeosSmartBoy
+namespace SmartBoy
 {
     public class Program
     {

@@ -1,20 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using LeosSmartBoy.Helpers;
-using LeosSmartBoy.Managers;
-using LeosSmartBoy.Models;
-using LeosSmartBoy.Services;
+using SmartBoy.Helpers;
+using SmartBoy.Managers;
+using SmartBoy.Models;
+using SmartBoy.Services;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 using System.Threading.Tasks;
-using LeosSmartBoy.Callbacks;
+using SmartBoy.Callbacks;
 using Newtonsoft.Json;
 using Telegram.Bot.Args;
 
-namespace LeosSmartBoy.Commands
+namespace SmartBoy.Commands
 {
     public class BillCommand : CommandImpl
     {

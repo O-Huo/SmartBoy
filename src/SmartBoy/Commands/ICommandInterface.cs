@@ -1,7 +1,7 @@
-﻿using LeosSmartBoy.Services;
+﻿using SmartBoy.Services;
 using Telegram.Bot.Args;
 
-namespace LeosSmartBoy.Commands
+namespace SmartBoy.Commands
 {
     public interface ICommandInterface
     {

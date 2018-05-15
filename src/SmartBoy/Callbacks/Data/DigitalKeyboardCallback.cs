@@ -1,4 +1,4 @@
-﻿namespace LeosSmartBoy.Callbacks.Data
+﻿namespace SmartBoy.Callbacks.Data
 {
     public class DigitalKeyboardCallbackData
     {

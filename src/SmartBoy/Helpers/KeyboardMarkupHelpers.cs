@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
-using LeosSmartBoy.Callbacks;
+using SmartBoy.Callbacks;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 
-namespace LeosSmartBoy.Helpers
+namespace SmartBoy.Helpers
 {
     public class KeyboardMarkupHelpers
     {

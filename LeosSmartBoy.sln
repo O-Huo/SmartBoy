@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.26114.2
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{9A685683-9BB6-4C48-ABE0-E8A35120E387}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeosSmartBoy", "src\LeosSmartBoy\LeosSmartBoy.csproj", "{D5FA8828-B0D4-4DD6-B93E-2652DE75C69B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartBoy", "src\SmartBoy\SmartBoy.csproj", "{D5FA8828-B0D4-4DD6-B93E-2652DE75C69B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

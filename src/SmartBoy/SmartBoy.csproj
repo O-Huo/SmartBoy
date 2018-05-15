@@ -2,10 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
-    <AssemblyName>LeosSmartBoy</AssemblyName>
+    <AssemblyName>SmartBoy</AssemblyName>
     <OutputType>Exe</OutputType>
-    <PackageId>LeosSmartBoy</PackageId>
-    <UserSecretsId>aspnet-LeosSmartBoy-20161008064424</UserSecretsId>
+    <PackageId>SmartBoy</PackageId>
+    <UserSecretsId>aspnet-SmartBoy-20161008064424</UserSecretsId>
     <AssetTargetFallback>$(AssetTargetFallback);portable-net45+win8+wp8+wpa81;</AssetTargetFallback>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>

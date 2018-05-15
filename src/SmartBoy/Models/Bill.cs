@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace LeosSmartBoy.Models
+namespace SmartBoy.Models
 {
     public class Bill
     {
