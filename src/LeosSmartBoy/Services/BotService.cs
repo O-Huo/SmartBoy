@@ -32,7 +32,7 @@ namespace LeosSmartBoy.Services
             BotClient.OnCallbackQuery += BotCallbackQueryReceived;
             BotClient.OnInlineQuery += BotInlineQueryReceived;
 
-            ReigsterCommands();
+            RegisterCommands();
 
             BotClient.StartReceiving();
             var task = new Task(() =>
@@ -102,7 +102,7 @@ namespace LeosSmartBoy.Services
         }
 
 
-        private void ReigsterCommands()
+        private void RegisterCommands()
         {
             BillCommand.BuildCommand(storageManager);
             RegisterCommand.BuildCommand(storageManager);
