@@ -7,6 +7,8 @@ using SmartBoy.Managers;
 using Newtonsoft.Json;
 using Telegram.Bot;
 using Telegram.Bot.Args;
+using Telegram.Bot.Types;
+using System.Linq;
 
 namespace SmartBoy.Services
 {
@@ -69,8 +71,11 @@ namespace SmartBoy.Services
 
         private void BotMessageReceived(object obj, MessageEventArgs args)
         {
-            var message = args.Message?.Text;
-            var result = message?.Split();
+            CheckUser(args);
+
+            var message = args.Message;
+            var text = message?.Text;
+            var result = text?.Split();
             var key = result?.Length > 0 ? result[0] : null;
             if (key == null) return;
 
@@ -80,6 +85,20 @@ namespace SmartBoy.Services
                 {
                     BotClient = BotClient,
                 }, args);
+            }
+        }
+
+        private void CheckUser(MessageEventArgs args) {
+            var message = args.Message;
+            var chat = message?.Chat;
+            var user = message?.From;
+            if (user != null) {
+                var result = storageManager.AddUsersToChat(chat.Id, new List<User> { user });
+                if (result.Any()) {
+                    var users = String.Join(",", result.Select(x => x.FirstName));
+                    BotClient.SendTextMessageAsync(chat.Id, $"Hello {users}, welcome onboard!", false, false,
+                        message.MessageId);
+                }
             }
         }
 
@@ -104,8 +123,7 @@ namespace SmartBoy.Services
 
         private void RegisterCommands()
         {
-            BillCommand.BuildCommand(storageManager);
-            RegisterCommand.BuildCommand(storageManager);
+            KickCommand.BuildCommand();
         }
     }
 }

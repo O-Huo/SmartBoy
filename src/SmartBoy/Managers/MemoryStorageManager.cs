@@ -16,8 +16,9 @@ namespace SmartBoy.Managers
             users.Add(user);
         }
 
-        public void AddUsersToChat(long chatId, List<User> userList)
+        public List<User> AddUsersToChat(long chatId, List<User> userList)
         {
+            var newUsers = new List<User>();
             if (!chatUserListDictionary.ContainsKey(chatId))
             {
                 chatUserListDictionary.Add(chatId, new HashSet<int>());
@@ -25,8 +26,12 @@ namespace SmartBoy.Managers
             foreach (var user in userList)
             {
                 SaveUser(user);
-                chatUserListDictionary[chatId].Add(user.Id);
+                if (!chatUserListDictionary[chatId].Contains(user.Id)) {
+                    chatUserListDictionary[chatId].Add(user.Id);
+                    newUsers.Add(user);
+                }
             }
+            return newUsers;
         }
 
         public List<User> GetChatUsers(long chatId)

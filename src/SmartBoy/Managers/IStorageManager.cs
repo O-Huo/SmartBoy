@@ -7,7 +7,7 @@ namespace SmartBoy.Managers
     public interface IStorageManager
     {
         void SaveUser(User user);
-        void AddUsersToChat(long chatId, List<User> userList);
+        List<User> AddUsersToChat(long chatId, List<User> userList);
         List<User> GetChatUsers(long chatId);
 
         void SaveBill(Bill bill);
