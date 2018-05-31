@@ -27,7 +27,7 @@ namespace SmartBoy.Commands
             var user = message.From;
             storageManager.AddUsersToChat(chat.Id, new List<User> { user });
 
-            context.BotClient.SendTextMessageAsync(chat.Id, "Register Succeeded", false, false, message.MessageId);
+            context.BotClient.SendTextMessageAsync(chat.Id, "Register Succeeded", Telegram.Bot.Types.Enums.ParseMode.Default, false, false, message.MessageId);
         }
     }
 }
