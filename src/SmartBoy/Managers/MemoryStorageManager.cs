@@ -7,13 +7,18 @@ namespace SmartBoy.Managers
 {
     public class MemoryStorageManager : IStorageManager
     {
-        private readonly ISet<User> users = new HashSet<User>();
+        private readonly ISet<User> users = new HashSet<User>(new SameUserComparer());
         private readonly IDictionary<long, ISet<int>> chatUserListDictionary = new Dictionary<long, ISet<int>>();
-        private readonly ISet<Bill> bills = new HashSet<Bill>();
-
         public void SaveUser(User user)
         {
+            users.Remove(user);
             users.Add(user);
+        }
+
+        public User FindUser(string username)
+        {
+            var u = users.FirstOrDefault(x => x.Username?.Equals(username.Substring(1)) ?? false);
+            return u;
         }
 
         public List<User> AddUsersToChat(long chatId, List<User> userList)
@@ -26,7 +31,8 @@ namespace SmartBoy.Managers
             foreach (var user in userList)
             {
                 SaveUser(user);
-                if (!chatUserListDictionary[chatId].Contains(user.Id)) {
+                if (!chatUserListDictionary[chatId].Contains(user.Id))
+                {
                     chatUserListDictionary[chatId].Add(user.Id);
                     newUsers.Add(user);
                 }
@@ -39,16 +45,6 @@ namespace SmartBoy.Managers
             if (!chatUserListDictionary.ContainsKey(chatId)) return new List<User>();
             var userIdSet = chatUserListDictionary[chatId];
             return users.Where(user => userIdSet.Contains(user.Id)).ToList();
-        }
-
-        public void SaveBill(Bill bill)
-        {
-            bills.Add(bill);
-        }
-
-        public Bill GetBillWIthMessageId(int messageId)
-        {
-            return bills.FirstOrDefault(bill => bill.MessageId == messageId);
         }
     }
 }

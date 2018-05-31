@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using SmartBoy.Callbacks;
 using SmartBoy.Commands;
 using SmartBoy.Managers;
-using Newtonsoft.Json;
 using Telegram.Bot;
 using Telegram.Bot.Args;
 using Telegram.Bot.Types;
-using System.Linq;
+using Telegram.Bot.Types.Enums;
 
 namespace SmartBoy.Services
 {
@@ -39,7 +40,7 @@ namespace SmartBoy.Services
             BotClient.StartReceiving();
             var task = new Task(() =>
             {
-                while (true) {}
+                while (true) { }
                 // ReSharper disable once FunctionNeverReturns
             });
             await task;
@@ -88,15 +89,26 @@ namespace SmartBoy.Services
             }
         }
 
-        private void CheckUser(MessageEventArgs args) {
+        private void CheckUser(MessageEventArgs args)
+        {
             var message = args.Message;
             var chat = message?.Chat;
-            var user = message?.From;
-            if (user != null) {
-                var result = storageManager.AddUsersToChat(chat.Id, new List<User> { user });
-                if (result.Any()) {
-                    var users = String.Join(",", result.Select(x => x.FirstName));
-                    BotClient.SendTextMessageAsync(chat.Id, $"Hello {users}, welcome onboard!", false, false,
+            List<User> users;
+            if (message?.Type == MessageType.ChatMembersAdded)
+            {
+                users = message.NewChatMembers.ToList();
+            }
+            else
+            {
+                users = new List<User> { message?.From };
+            }
+            if (users.Any())
+            {
+                var result = storageManager.AddUsersToChat(chat.Id, users);
+                if (result.Any())
+                {
+                    var welcome = String.Join(",", result.Select(x => x.FirstName));
+                    BotClient.SendTextMessageAsync(chat.Id, $"Hello {welcome}, welcome onboard!", ParseMode.Default, false, false,
                         message.MessageId);
                 }
             }
@@ -120,10 +132,9 @@ namespace SmartBoy.Services
             Console.WriteLine(args);
         }
 
-
         private void RegisterCommands()
         {
-            KickCommand.BuildCommand();
+            KickCommand.BuildCommand(storageManager);
         }
     }
 }

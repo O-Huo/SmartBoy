@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
+using SmartBoy.Callbacks;
 using SmartBoy.Helpers;
 using SmartBoy.Managers;
-using SmartBoy.Models;
 using SmartBoy.Services;
 using Telegram.Bot;
+using Telegram.Bot.Args;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
-using System.Threading.Tasks;
-using SmartBoy.Callbacks;
-using Newtonsoft.Json;
-using Telegram.Bot.Args;
 
 namespace SmartBoy.Commands
 {
@@ -21,14 +20,15 @@ namespace SmartBoy.Commands
         private readonly IStorageManager storageManager;
         private static string command = "/kick";
 
-        private KickCommand() : base(command)
+        private KickCommand(IStorageManager storageManager) : base(command)
         {
+            this.storageManager = storageManager;
         }
 
-        public static void BuildCommand()
+        public static void BuildCommand(IStorageManager storageManager)
         {
             // ReSharper disable once ObjectCreationAsStatement
-            new KickCommand();
+            new KickCommand(storageManager);
         }
 
         public override async void Process(BotContext context, MessageEventArgs args)
@@ -36,17 +36,30 @@ namespace SmartBoy.Commands
             var message = args.Message;
             var chat = message.Chat;
             if (chat.Type != ChatType.Group && chat.Type != ChatType.Supergroup) return;
-            if (message.Entities.Count != 2) return;
+            if (message.Entities.Length != 2) return;
             var entityType = message.Entities[1].Type;
-            if (entityType != MessageEntityType.Mention && entityType != MessageEntityType.TextMention) return;
-            var user = message.Entities[1].User;
-            if (user != null) {
-                await context.BotClient.KickChatMemberAsync(chat.Id, user.Id);
+            User user = null;
+            if (entityType == MessageEntityType.TextMention)
+            {
+                user = message.Entities[1].User;
+            }
+            else if (entityType == MessageEntityType.Mention)
+            {
+                user = storageManager.FindUser(message.EntityValues.ElementAt(1));
+            }
+            if (user != null && user.IsBot == false)
+            {
+                try
+                {
+                    await context.BotClient.KickChatMemberAsync(chat.Id, user.Id);
+                }
+                catch (Telegram.Bot.Exceptions.ApiRequestException)
+                {
+
+                }
             }
         }
 
-        public override async void Callback(BotContext context, CallbackQueryEventArgs args)
-        {
-        }
+        public override void Callback(BotContext context, CallbackQueryEventArgs args) { }
     }
 }

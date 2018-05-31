@@ -19,20 +19,21 @@ namespace SmartBoy.Helpers
                 var rowButtons = new List<InlineKeyboardButton>();
                 for (var col = 0; col < 3; col++)
                 {
-                    var index = row*3 + col + 1;
-                    rowButtons.Add(new InlineKeyboardButton(index.ToString(), fillCallbackStringData(index.ToString())));
+                    var index = row * 3 + col + 1;
+                    rowButtons.Add(InlineKeyboardButton.WithCallbackData(index.ToString(),
+                        fillCallbackStringData(index.ToString())));
                 }
                 buttons.Add(rowButtons.ToArray());
             }
-            buttons.Add(new []
+            buttons.Add(new[]
             {
-                new InlineKeyboardButton("0", fillCallbackStringData("0")), 
-                new InlineKeyboardButton(".", fillCallbackButtonData(Button.Dot)),
-                new InlineKeyboardButton("\u2190", fillCallbackButtonData(Button.Back))
+                InlineKeyboardButton.WithCallbackData("0", fillCallbackStringData("0")),
+                InlineKeyboardButton.WithCallbackData(".", fillCallbackButtonData(Button.Dot)),
+                InlineKeyboardButton.WithCallbackData("\u2190", fillCallbackButtonData(Button.Back))
             });
-            buttons.Add(new []
+            buttons.Add(new[]
             {
-                new InlineKeyboardButton("OK", fillCallbackButtonData(Button.Ok))
+                InlineKeyboardButton.WithCallbackData("OK", fillCallbackButtonData(Button.Ok))
             });
             return new InlineKeyboardMarkup(buttons.ToArray());
         }
@@ -56,7 +57,7 @@ namespace SmartBoy.Helpers
             var rowButton = new List<InlineKeyboardButton>();
             foreach (var user in users)
             {
-                rowButton.Add(new InlineKeyboardButton(userNameBuilder(user), fillCallbackStringData(user.Id.ToString())));
+                rowButton.Add(InlineKeyboardButton.WithCallbackData(userNameBuilder(user), fillCallbackStringData(user.Id.ToString())));
                 if (rowButton.Count != 3) continue;
                 buttons.Add(rowButton.ToArray());
                 rowButton = new List<InlineKeyboardButton>();
@@ -65,9 +66,9 @@ namespace SmartBoy.Helpers
             {
                 buttons.Add(rowButton.ToArray());
             }
-            buttons.Add(new []
+            buttons.Add(new[]
             {
-                new InlineKeyboardButton("OK", fillCallbackButtonData(Button.Ok))
+                InlineKeyboardButton.WithCallbackData("OK", fillCallbackButtonData(Button.Ok))
             });
             return new InlineKeyboardMarkup(buttons.ToArray());
         }
