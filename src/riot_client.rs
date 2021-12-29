@@ -44,7 +44,7 @@ pub async fn get_lose_streak(riot_id: String, last_query_time: i64, current_stre
     //     .await
     //     .unwrap();
     let matches =
-        timeout(Duration::from_secs(5000),
+        timeout(Duration::from_secs(5),
                     API
                     .match_v5()
                     .get_match_ids_by_puuid(RegionalRoute::AMERICAS,&riot_id, None, None, None, Some
