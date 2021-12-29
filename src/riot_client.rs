@@ -17,6 +17,7 @@ pub async fn get_riot_id_for_user(user_name: String) -> String {
 
 
 pub async fn get_lose_streak(riot_id: String, last_query_time: i64, current_streak: i32 ) -> i32 {
+    println!("get lose streak for user {}", riot_id);
     let riot_api = RiotApi::new(env::var("RAPI").unwrap_or_default());
     let matches = riot_api
         .match_v5()
@@ -25,6 +26,7 @@ pub async fn get_lose_streak(riot_id: String, last_query_time: i64, current_stre
         .unwrap();
     let mut lose_streak = 0;
     for match_id in matches {
+        println!("get match {}", match_id);
         let game = riot_api.match_v5().get_match(RegionalRoute::AMERICAS, &match_id)
             .await
             .unwrap()

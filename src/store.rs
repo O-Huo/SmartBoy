@@ -50,6 +50,7 @@ impl FileStore {
     }
 
     pub fn check_update(&mut self) -> bool {
+        println!("check update");
         let result = &self
             .store.user_list
             .iter_mut()

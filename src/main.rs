@@ -107,16 +107,16 @@ async fn main() {
                 println!("Failed to get updates: {:?}", error);
             }
         }
-        if SystemTime::now()
-            .duration_since(last_update_time)
-            .unwrap()
-            .as_secs()
-            > 5
-        {
-            if store.check_update() {
-                send_message(&mut store, &api);
-            }
-            last_update_time = SystemTime::now();
-        }
+        // if SystemTime::now()
+            // .duration_since(last_update_time)
+            // .unwrap()
+            // .as_secs()
+            // > 30
+        // {
+            // if store.check_update() {
+                // send_message(&mut store, &api);
+            // }
+            // last_update_time = SystemTime::now();
+        // }
     }
 }
