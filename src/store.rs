@@ -7,6 +7,7 @@ use serde::Deserialize;
 use serde::Serialize;
 use std::collections::HashSet;
 use std::time::Duration;
+use futures::join;
 use tokio::time::timeout;
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -53,20 +54,15 @@ impl FileStore {
 
     pub fn check_update(&mut self) -> bool {
         println!("check update");
-        let result = &self
-            .store.user_list
-            .iter_mut()
-            .map(|(key, user)|  user.update())
-            .map(|it| {
-                block_on(it)
-            })
-            .any(|it| {
-                it
-            });
-        if *result {
+        let mut result = false;
+        for (_, user) in &mut self.store.user_list {
+            let updated = block_on(user.update());
+            result |= updated;
+        }
+        if result {
             self.persist();
         }
         println!("check finished");
-        return *result;
+        return result;
     }
 }
