@@ -78,18 +78,22 @@ async fn main() {
                         if let Some(text) = message.text {
                             if text.starts_with("/add") {
                                 let strs: Vec<&str> = text.split(" ").collect();
-                                let user_id = strs[1];
-                                let from = message.from.unwrap();
-                                let tg_id = from.id;
-                                let tg_name = from.first_name;
-                                store.add_or_update_user(
-                                    tg_id,
-                                    User::new((&user_id).to_string(), tg_id, tg_name).await,
-                                );
-                                if message.chat.type_field == ChatType::Group {
-                                    store.add_group(message.chat.id)
+                                if strs.len() > 1 {
+                                    let user_id = strs[1];
+                                    let from = message.from.unwrap();
+                                    let tg_id = from.id;
+                                    let tg_name = from.first_name;
+                                    store.add_or_update_user(
+                                        tg_id,
+                                        User::new((&user_id).to_string(), tg_id, tg_name).await,
+                                    );
+                                    if message.chat.type_field == ChatType::Supergroup
+                                        || message.chat.type_field == ChatType::Group
+                                    {
+                                        store.add_group(message.chat.id)
+                                    }
+                                    send_message(&mut store, &api);
                                 }
-                                send_message(&mut store, &api);
                             }
                         }
                         update_params = update_params_builder
@@ -103,7 +107,12 @@ async fn main() {
                 println!("Failed to get updates: {:?}", error);
             }
         }
-        if SystemTime::now().duration_since(last_update_time).unwrap().as_secs() > 5 {
+        if SystemTime::now()
+            .duration_since(last_update_time)
+            .unwrap()
+            .as_secs()
+            > 5
+        {
             if store.check_update() {
                 send_message(&mut store, &api);
             }

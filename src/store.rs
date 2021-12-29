@@ -46,6 +46,7 @@ impl FileStore {
 
     pub fn add_group(&mut self, group_id: i64) {
         self.store.joined_group.insert(group_id);
+        self.persist()
     }
 
     pub fn check_update(&mut self) -> bool {
