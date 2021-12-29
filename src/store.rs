@@ -59,9 +59,7 @@ impl FileStore {
             let updated = block_on(user.update());
             result |= updated;
         }
-        if result {
-            self.persist();
-        }
+        self.persist();
         println!("check finished");
         return result;
     }
