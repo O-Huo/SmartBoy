@@ -15,6 +15,7 @@ use std::os::unix::prelude::CommandExt;
 use std::time::SystemTime;
 use tokio;
 use tokio::time::{sleep, Duration};
+use riven::consts::Tier;
 use warp::{http, Filter};
 
 async fn process_telegram_updates(
@@ -30,11 +31,21 @@ async fn process_telegram_updates(
     ))
 }
 
+fn map_tier_to_emoji(tier: Tier) -> String {
+    String::from(match tier {
+        Tier::BRONZE => "🥉",
+        Tier::SILVER => "🥈",
+        Tier::GOLD => "🥇",
+        Tier::IRON => "🤡",
+        _ => "💎",
+    })
+}
+
 fn build_message(users: Vec<User>) -> String {
     let mut users_clone = users.clone();
     users_clone.sort_by(|a, b| b.lose_streak.partial_cmp(&a.lose_streak).unwrap());
     let mut user_string = users_clone.iter().fold(String::new(), |acc, user| {
-        acc + &format!("{}: {}", user.tg_name, user.lose_streak) + "\n"
+        acc + &format!("{} ({}): {}", user.tg_name, map_tier_to_emoji(user.tier), user.lose_streak) + "\n"
     });
     user_string.pop();
     return "莲贵榜:\n".to_owned() + &user_string;
@@ -107,16 +118,16 @@ async fn main() {
                 println!("Failed to get updates: {:?}", error);
             }
         }
-        // if SystemTime::now()
-            // .duration_since(last_update_time)
-            // .unwrap()
-            // .as_secs()
-            // > 30
-        // {
-            // if store.check_update() {
-                // send_message(&mut store, &api);
-            // }
-            // last_update_time = SystemTime::now();
-        // }
+        if SystemTime::now()
+            .duration_since(last_update_time)
+            .unwrap()
+            .as_secs()
+            > 5
+        {
+            if store.check_update() {
+                send_message(&mut store, &api);
+            }
+            last_update_time = SystemTime::now();
+        }
     }
 }

@@ -1,18 +1,33 @@
 use riven::consts::PlatformRoute;
 use riven::consts::RegionalRoute;
 use riven::RiotApi;
+use riven::consts::Tier;
+use riven::models::summoner_v4::Summoner;
 use std::env;
 
 
-pub async fn get_riot_id_for_user(user_name: String) -> String {
+pub async fn get_summoner_for_user(user_name: String) -> Summoner {
     let riot_api = RiotApi::new(env::var("RAPI").unwrap_or_default());
     let summoner = riot_api
         .summoner_v4()
         .get_by_summoner_name(PlatformRoute::NA1, &user_name)
         .await
-        .expect("Get summoner failed.")
-        .expect("There is no summoner with that name.");
-    return summoner.puuid;
+        .unwrap()
+        .unwrap();
+    return summoner;
+}
+
+pub async fn get_rank(id: String) -> Tier {
+    let riot_api = RiotApi::new(env::var("RAPI").unwrap_or_default());
+    let entries = riot_api
+        .league_v4()
+        .get_league_entries_for_summoner(PlatformRoute::NA1, &id)
+        .await
+        .unwrap();
+    if entries.len() == 0 {
+        return Tier::IRON;
+    }
+    return entries[0].tier.unwrap_or(Tier::IRON);
 }
 
 
