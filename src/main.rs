@@ -16,6 +16,7 @@ use std::time::SystemTime;
 use tokio;
 use tokio::time::{sleep, Duration};
 use riven::consts::Tier;
+use tracing::{info, info_span, Level};
 use warp::{http, Filter};
 
 async fn process_telegram_updates(
@@ -122,11 +123,19 @@ async fn main() {
             .duration_since(last_update_time)
             .unwrap()
             .as_secs()
-            > 5
+            > 60 * 2
         {
-            if store.check_update() {
-                send_message(&mut store, &api);
-            }
+            let collector = tracing_subscriber::fmt()
+                // filter spans/events with level TRACE or higher.
+                .with_max_level(Level::TRACE)
+                // build but do not install the subscriber.
+                .finish();
+            tracing::subscriber::with_default(collector, || {
+                info!("This will be logged to stdout");
+                if store.check_update() {
+                    send_message(&mut store, &api);
+                }
+            });
             last_update_time = SystemTime::now();
         }
     }

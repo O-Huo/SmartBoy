@@ -6,6 +6,8 @@ use std::path::Path;
 use serde::Deserialize;
 use serde::Serialize;
 use std::collections::HashSet;
+use std::time::Duration;
+use tokio::time::timeout;
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Store {
@@ -54,12 +56,17 @@ impl FileStore {
         let result = &self
             .store.user_list
             .iter_mut()
-            .map(|(key, user)| user.update())
-            .map(|it| block_on(it))
-            .any(|it| it);
+            .map(|(key, user)|  user.update())
+            .map(|it| {
+                block_on(it)
+            })
+            .any(|it| {
+                it
+            });
         if *result {
             self.persist();
         }
+        println!("check finished");
         return *result;
     }
 }

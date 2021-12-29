@@ -50,13 +50,16 @@ impl User {
             riot_puuid_id: puuid,
             tg_id,
             tg_name,
-            last_query_time: SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).expect("").as_secs() as i64,
+            last_query_time: SystemTime::now()
+                .duration_since(SystemTime::UNIX_EPOCH).unwrap().as_secs() as i64,
         }
     }
 
     pub async fn update(& mut self) -> bool {
-        self.last_query_time = SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).expect("").as_secs() as i64;
+        println!("Update {}", &self.tg_name);
         let new_streak = get_lose_streak(self.riot_puuid_id.clone(), self.last_query_time, self.lose_streak).await;
+        self.last_query_time = SystemTime::now()
+            .duration_since(SystemTime::UNIX_EPOCH).unwrap().as_secs() as i64;
         if new_streak != self.lose_streak {
             self.lose_streak = new_streak;
             return true;
