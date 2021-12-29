@@ -123,7 +123,7 @@ async fn main() {
             .duration_since(last_update_time)
             .unwrap()
             .as_secs()
-            > 10
+            > 5
         {
             let collector = tracing_subscriber::fmt()
                 // filter spans/events with level TRACE or higher.
