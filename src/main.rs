@@ -2,6 +2,7 @@ mod riot_client;
 mod store;
 mod telegram_client;
 mod user;
+use env_logger;
 use crate::store::FileStore;
 use crate::user::User;
 use frankenstein::Api;
@@ -76,67 +77,56 @@ async fn main() {
 
     let mut update_params = update_params_builder.build().unwrap();
     let mut store = FileStore::new(String::from("./out.txt"));
-    let mut last_update_time = SystemTime::now();
 
-    loop {
-        let result = api.get_updates(&update_params);
+    let result = api.get_updates(&update_params);
 
-        println!("result: {:?}", result);
+    println!("result: {:?}", result);
 
-        match result {
-            Ok(response) => {
-                for update in response.result {
-                    if let Some(message) = update.message {
-                        if let Some(text) = message.text {
-                            if text.starts_with("/add") {
-                                let strs: Vec<&str> = text.split(" ").collect();
-                                if strs.len() > 1 {
-                                    let user_id = strs[1];
-                                    let from = message.from.unwrap();
-                                    let tg_id = from.id;
-                                    let tg_name = from.first_name;
-                                    store.add_or_update_user(
-                                        tg_id,
-                                        User::new((&user_id).to_string(), tg_id, tg_name).await,
-                                    );
-                                    if message.chat.type_field == ChatType::Supergroup
-                                        || message.chat.type_field == ChatType::Group
-                                    {
-                                        store.add_group(message.chat.id)
-                                    }
-                                    send_message(&mut store, &api);
+    match result {
+        Ok(response) => {
+            for update in response.result {
+                if let Some(message) = update.message {
+                    if let Some(text) = message.text {
+                        if text.starts_with("/add") {
+                            let strs: Vec<&str> = text.split(" ").collect();
+                            if strs.len() > 1 {
+                                let user_id = strs[1];
+                                let from = message.from.unwrap();
+                                let tg_id = from.id;
+                                let tg_name = from.first_name;
+                                store.add_or_update_user(
+                                    tg_id,
+                                    User::new((&user_id).to_string(), tg_id, tg_name).await,
+                                );
+                                if message.chat.type_field == ChatType::Supergroup
+                                    || message.chat.type_field == ChatType::Group
+                                {
+                                    store.add_group(message.chat.id)
                                 }
+                                send_message(&mut store, &api);
                             }
                         }
-                        update_params = update_params_builder
-                            .offset(update.update_id + 1)
-                            .build()
-                            .unwrap();
                     }
+                    update_params = update_params_builder
+                        .offset(update.update_id + 1)
+                        .build()
+                        .unwrap();
                 }
-            }
-            Err(error) => {
-                println!("Failed to get updates: {:?}", error);
             }
         }
-        if SystemTime::now()
-            .duration_since(last_update_time)
-            .unwrap()
-            .as_secs()
-            > 5
-        {
-            let collector = tracing_subscriber::fmt()
-                // filter spans/events with level TRACE or higher.
-                .with_max_level(Level::TRACE)
-                // build but do not install the subscriber.
-                .finish();
-            tracing::subscriber::with_default(collector, || {
-                info!("This will be logged to stdout");
-                if store.check_update() {
-                    send_message(&mut store, &api);
-                }
-            });
-            last_update_time = SystemTime::now();
+        Err(error) => {
+            println!("Failed to get updates: {:?}", error);
         }
     }
+    let collector = tracing_subscriber::fmt()
+        // filter spans/events with level TRACE or higher.
+        .with_max_level(Level::TRACE)
+        // build but do not install the subscriber.
+        .finish();
+    tracing::subscriber::with_default(collector, || {
+        info!("This will be logged to stdout");
+        if store.check_update() {
+            send_message(&mut store, &api);
+        }
+    });
 }

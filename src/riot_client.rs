@@ -6,10 +6,32 @@ use riven::models::summoner_v4::Summoner;
 use std::env;
 use std::time::{Duration, SystemTime};
 use lazy_static::lazy_static;
+use riven::reqwest::ClientBuilder;
+use riven::reqwest::header::HeaderValue;
 use tokio::time::timeout;
+use warp::http::HeaderMap;
 
 lazy_static! {
-    static ref API: RiotApi = RiotApi::new(env::var("RAPI").unwrap_or_default());
+    static ref API: RiotApi = RiotApi::new((|| {
+        let mut default_headers = HeaderMap::new();
+        default_headers.insert(
+            RiotApiConfig::RIOT_KEY_HEADER,
+            HeaderValue::from_bytes(env::var("RAPI").unwrap_or_default().as_ref()).unwrap()
+        );
+        let client_builder = ClientBuilder::new();
+        let config = RiotApiConfig::with_client_builder(
+            client_builder
+            .default_headers(default_headers)
+            .timeout(Duration::from_secs(5))
+            .connect_timeout(Duration::from_secs(5))
+            .connection_verbose(true)
+            .tcp_keepalive(None)
+            // .pool_max_idle_per_host(0)
+            .pool_idle_timeout(None)
+            .no_gzip()
+        );
+        config
+    })());
 }
 
 
@@ -38,19 +60,12 @@ pub async fn get_rank(id: String) -> Tier {
 
 pub async fn get_lose_streak(riot_id: String, last_query_time: i64, current_streak: i32 ) -> i32 {
     println!("get lose streak for user {}", riot_id);
-    // let matches = riot_api
-    //     .match_v5()
-    //     .get_match_ids_by_puuid(RegionalRoute::AMERICAS,&riot_id, None, None, None, Some(last_query_time), None, None)
-    //     .await
-    //     .unwrap();
     let matches =
-        timeout(Duration::from_secs(5),
-                    API
-                    .match_v5()
-                    .get_match_ids_by_puuid(RegionalRoute::AMERICAS,&riot_id, None, None, None, Some
-                        (last_query_time), None, None))
+        API
+            .match_v5()
+            .get_match_ids_by_puuid(RegionalRoute::AMERICAS,&riot_id, None, None, None, Some
+                (last_query_time), None, None)
             .await
-            .unwrap()
             .unwrap();
     let mut lose_streak = 0;
     for match_id in matches {
