@@ -32,7 +32,7 @@ async fn process_telegram_updates(
 
 fn build_message(users: Vec<User>) -> String {
     let mut users_clone = users.clone();
-    users_clone.sort_by(|a, b| a.lose_streak.partial_cmp(&b.lose_streak).unwrap());
+    users_clone.sort_by(|a, b| b.lose_streak.partial_cmp(&a.lose_streak).unwrap());
     let mut user_string = users_clone.iter().fold(String::new(), |acc, user| {
         acc + &format!("{}: {}", user.tg_name, user.lose_streak) + "\n"
     });
