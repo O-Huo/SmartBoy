@@ -58,7 +58,8 @@ pub async fn get_rank(id: String) -> Tier {
 }
 
 
-pub async fn get_lose_streak(riot_id: String, last_query_time: i64, current_streak: i32 ) -> i32 {
+pub async fn get_lose_streak(riot_id: String, last_query_time: i64,
+                             current_streak: i32) -> (i32, i64) {
     println!("get lose streak for user {}", riot_id);
     let matches =
         API
@@ -68,21 +69,26 @@ pub async fn get_lose_streak(riot_id: String, last_query_time: i64, current_stre
             .await
             .unwrap();
     let mut lose_streak = 0;
+    let mut current_query_time = last_query_time;
     for match_id in matches {
         println!("get match {}", match_id);
         let game = API.match_v5().get_match(RegionalRoute::AMERICAS, &match_id)
             .await
             .unwrap()
             .unwrap();
+        let game_end_timestamp = game.info.game_end_timestamp.unwrap();
+        if game_end_timestamp + 1 > current_query_time {
+            current_query_time = game_end_timestamp + 1;
+        }
         for participant in game.info.participants {
             if participant.puuid == riot_id {
                 if participant.win {
-                    return lose_streak;
+                    return (lose_streak, current_query_time);
                 } else {
                     lose_streak += 1;
                 }
             }
         }
     }
-    return lose_streak + current_streak;
+    return (lose_streak + current_streak, current_query_time);
 }

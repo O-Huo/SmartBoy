@@ -42,24 +42,25 @@ impl User {
         let summoner = get_summoner_for_user(user_name.clone()).await;
         let riot_id = summoner.id;
         let puuid = summoner.puuid;
+        let (lose_streak, last_query_time) = get_lose_streak(puuid.clone(), 0, 0).await;
         Self {
             user_name,
-            lose_streak: get_lose_streak(puuid.clone(), 0, 0).await,
+            lose_streak,
             tier: get_rank(riot_id.clone()).await,
             riot_id,
             riot_puuid_id: puuid,
             tg_id,
             tg_name,
-            last_query_time: SystemTime::now()
-                .duration_since(SystemTime::UNIX_EPOCH).unwrap().as_secs() as i64,
+            last_query_time
         }
     }
 
     pub async fn update(& mut self) -> bool {
         println!("Update {}", &self.tg_name);
-        let new_streak = get_lose_streak(self.riot_puuid_id.clone(), self.last_query_time, self.lose_streak).await;
-        self.last_query_time = SystemTime::now()
-            .duration_since(SystemTime::UNIX_EPOCH).unwrap().as_secs() as i64;
+        let (new_streak, new_query_time) =
+            get_lose_streak(self.riot_puuid_id.clone(),
+                            self.last_query_time, self.lose_streak).await;
+        self.last_query_time = new_query_time;
         if new_streak != self.lose_streak {
             self.lose_streak = new_streak;
             return true;
