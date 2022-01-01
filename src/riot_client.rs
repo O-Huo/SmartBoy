@@ -76,7 +76,7 @@ pub async fn get_lose_streak(riot_id: String, last_query_time: i64,
             .await
             .unwrap()
             .unwrap();
-        let game_end_timestamp = game.info.game_end_timestamp.unwrap();
+        let game_end_timestamp = game.info.game_end_timestamp.unwrap() / 1000;
         if game_end_timestamp + 1 > current_query_time {
             current_query_time = game_end_timestamp + 1;
         }
