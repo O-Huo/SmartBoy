@@ -1,6 +1,6 @@
 use crate::riot_client::get_summoner_for_user;
 use crate::riot_client::get_lose_streak;
-use crate::riot_client::get_rank;
+use crate::riot_client::get_tier;
 use std::time::SystemTime;
 use serde::Deserialize;
 use serde::Serialize;
@@ -46,7 +46,7 @@ impl User {
         Self {
             user_name,
             lose_streak,
-            tier: get_rank(riot_id.clone()).await,
+            tier: get_tier(riot_id.clone()).await,
             riot_id,
             riot_puuid_id: puuid,
             tg_id,
@@ -60,11 +60,17 @@ impl User {
         let (new_streak, new_query_time) =
             get_lose_streak(self.riot_puuid_id.clone(),
                             self.last_query_time, self.lose_streak).await;
+        let tier = get_tier(self.riot_id.clone()).await;
         self.last_query_time = new_query_time;
+        let mut updated = false;
         if new_streak != self.lose_streak {
             self.lose_streak = new_streak;
-            return true;
+            updated = true;
         }
-        return false;
+        if tier != self.tier {
+            self.tier = tier;
+            updated = true;
+        }
+        return updated;
     }
 }

@@ -45,7 +45,7 @@ pub async fn get_summoner_for_user(user_name: String) -> Summoner {
     return summoner;
 }
 
-pub async fn get_rank(id: String) -> Tier {
+pub async fn get_tier(id: String) -> Tier {
     let entries = API
         .league_v4()
         .get_league_entries_for_summoner(PlatformRoute::NA1, &id)
