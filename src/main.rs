@@ -72,12 +72,18 @@ async fn main() {
     let token = env::var("TG_KEY").unwrap();
     let api = Api::new(&token);
 
+
     let mut update_params_builder = GetUpdatesParamsBuilder::default();
     update_params_builder.allowed_updates(vec!["message".to_string()]);
 
     let mut update_params = update_params_builder.build().unwrap();
     let mut store = FileStore::new(String::from("./out.txt"));
     let mut last_update_time = SystemTime::now();
+
+    if env::args().len() > 1 {
+        store.refresh();
+        return;
+    }
 
     loop {
         let result = api.get_updates(&update_params);

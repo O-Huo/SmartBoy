@@ -55,6 +55,14 @@ impl User {
         }
     }
 
+    pub async fn refresh(& mut self) {
+        let summoner = get_summoner_for_user(self.user_name.clone()).await;
+        self.riot_id = summoner.id;
+        self.riot_puuid_id = summoner.puuid;
+        self.last_query_time = 0;
+        self.lose_streak = 0;
+    }
+
     pub async fn update(& mut self) -> bool {
         println!("Update {}", &self.tg_name);
         let (new_streak, new_query_time) =

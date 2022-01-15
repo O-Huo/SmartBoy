@@ -12,26 +12,28 @@ use tokio::time::timeout;
 use warp::http::HeaderMap;
 
 lazy_static! {
-    static ref API: RiotApi = RiotApi::new((|| {
-        let mut default_headers = HeaderMap::new();
-        default_headers.insert(
-            RiotApiConfig::RIOT_KEY_HEADER,
-            HeaderValue::from_bytes(env::var("RAPI").unwrap_or_default().as_ref()).unwrap()
-        );
-        let client_builder = ClientBuilder::new();
-        let config = RiotApiConfig::with_client_builder(
-            client_builder
-            .default_headers(default_headers)
-            .timeout(Duration::from_secs(5))
-            .connect_timeout(Duration::from_secs(5))
-            .connection_verbose(true)
-            .tcp_keepalive(None)
-            // .pool_max_idle_per_host(0)
-            .pool_idle_timeout(None)
-            .no_gzip()
-        );
-        config
-    })());
+    static ref API: RiotApi = RiotApi::new(RiotApiConfig::with_key(env::var("RAPI")
+        .unwrap_or_default()));
+    // RiotApi::new((|| {
+    //     let mut default_headers = HeaderMap::new();
+    //     default_headers.insert(
+    //         RiotApiConfig::RIOT_KEY_HEADER,
+    //         HeaderValue::from_bytes(env::var("RAPI").unwrap_or_default().as_ref()).unwrap()
+    //     );
+    //     let client_builder = ClientBuilder::new();
+    //     let config = RiotApiConfig::with_client_builder(
+    //         client_builder
+    //         .default_headers(default_headers)
+    //         .timeout(Duration::from_secs(5))
+    //         .connect_timeout(Duration::from_secs(5))
+    //         .connection_verbose(true)
+    //         .tcp_keepalive(None)
+    //         // .pool_max_idle_per_host(0)
+    //         .pool_idle_timeout(None)
+    //         .no_gzip()
+    //     );
+    //     config
+    // })());
 }
 
 

@@ -52,6 +52,13 @@ impl FileStore {
         self.persist()
     }
 
+    pub fn refresh(&mut self) {
+        for (_, user) in &mut self.store.user_list {
+            block_on(user.refresh())
+        }
+        self.persist();
+    }
+
     pub fn check_update(&mut self) -> bool {
         println!("check update");
         let mut result = false;
